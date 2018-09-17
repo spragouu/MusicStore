@@ -15,8 +15,9 @@ namespace MusicStore.Controllers
         }
 
         //GET: Store/Product
-        public ActionResult Product()
+        public ActionResult Product(string ProductName)
         {
+            ViewBag.ProductName = ProductName;
             return View();
         }
     }
