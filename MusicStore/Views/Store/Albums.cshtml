@@ -14,7 +14,9 @@
             @a.Artist.Name<br />
             @String.Format("{0:c}", a.Price)<br />
             <img src="@a.AlbumArtUrl" alt="@a.Title" /><br />
-            <button class="btn btn-primary">Add To Cart</button>
+            <a href="/Store/AddToCart?AlbumId=@a.AlbumId">
+                <button class="btn btn-primary">Add To Cart</button>
+            </a>
         </div>
     }
 </div>
