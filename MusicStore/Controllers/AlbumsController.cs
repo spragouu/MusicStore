@@ -13,13 +13,30 @@ namespace MusicStore.Controllers
     [Authorize]
     public class AlbumsController : Controller
     {
-        private MusicStoreModel db = new MusicStoreModel();
+        //private MusicStoreModel db = new MusicStoreModel();
+        private IAlbumsMock db;
+
+        public AlbumsController()
+        {
+            //if nothing passed to constructor, connect to the db (this is the default)
+            this.db = new EFAlbums();
+        }
+
+        public AlbumsController(IAlbumsMock albumsMock)
+        {
+            //if we pass a mock object to the constructor, we are unit testing so no db
+            this.db = albumsMock;
+        }
 
         // GET: Albums
         public ActionResult Index()
         {
-            var albums = db.Albums.Include(a => a.Artist).Include(a => a.Genre);
-            return View(albums.OrderBy(a => a.Artist.Name).ThenBy(a => a.Title).ToList());
+            //var albums = db.Albums.Include(a => a.Artist).Include(a => a.Genre);
+            //return View(albums.OrderBy(a => a.Artist.Name).ThenBy(a => a.Title).ToList());
+
+            var albums = db.Albums.OrderBy(a => a.Artist).ThenBy(a => a.Genre).ToList();
+            return View("Index", albums);
+
         }
 
         // GET: Albums/Details/5
