@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,8 +10,10 @@ namespace MusicStore.Models
     {
         //db connection moved here from Albums controller
         private MusicStoreModel db = new MusicStoreModel();
+
         public IQueryable<Album> Albums { get { return db.Albums; } }
-        public IQueryable<Artist> Artist { get { return db.Artists; } }
+        public IQueryable<Artist> Artists { get { return db.Artists; } }
+        public IQueryable<Genre> Genres { get { return db.Genres; } }
 
         public void Delete(Album album)
         {

@@ -34,24 +34,31 @@ namespace MusicStore.Controllers
             //var albums = db.Albums.Include(a => a.Artist).Include(a => a.Genre);
             //return View(albums.OrderBy(a => a.Artist.Name).ThenBy(a => a.Title).ToList());
 
-            var albums = db.Albums.OrderBy(a => a.Artist).ThenBy(a => a.Genre).ToList();
+            var albums = db.Albums.OrderBy(a => a.Artist.Name).ThenBy(a => a.Title).ToList();
             return View("Index", albums);
-
         }
 
+        [AllowAnonymous]
         // GET: Albums/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("Error");
             }
-            Album album = db.Albums.Find(id);
+            // original find code
+            // Album album = db.Albums.Find(id);
+
+            // new code to work with both the db and the mock interface
+            Album album = db.Albums.SingleOrDefault(a => a.AlbumId == id);
+
             if (album == null)
             {
-                return HttpNotFound();
+                // return HttpNotFound();
+                return View("Error");
             }
-            return View(album);
+            return View("Details", album);
         }
 
         // GET: Albums/Create
@@ -59,7 +66,7 @@ namespace MusicStore.Controllers
         {
             ViewBag.ArtistId = new SelectList(db.Artists, "ArtistId", "Name");
             ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name");
-            return View();
+            return View("Create");
         }
 
         // POST: Albums/Create
@@ -71,14 +78,15 @@ namespace MusicStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Albums.Add(album);
-                db.SaveChanges();
+                //db.Albums.Add(album);
+                //db.SaveChanges();
+                db.Save(album);
                 return RedirectToAction("Index");
             }
 
             ViewBag.ArtistId = new SelectList(db.Artists, "ArtistId", "Name", album.ArtistId);
             ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", album.GenreId);
-            return View(album);
+            return View("Create", album);
         }
 
         // GET: Albums/Edit/5
@@ -86,16 +94,19 @@ namespace MusicStore.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("Error");
             }
-            Album album = db.Albums.Find(id);
+            //Album album = db.Albums.Find(id);
+            Album album = db.Albums.SingleOrDefault(a => a.AlbumId == id);
             if (album == null)
             {
-                return HttpNotFound();
+                //return HttpNotFound();
+                return View("Error");
             }
             ViewBag.ArtistId = new SelectList(db.Artists, "ArtistId", "Name", album.ArtistId);
             ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", album.GenreId);
-            return View(album);
+            return View("Edit", album);
         }
 
         // POST: Albums/Edit/5
@@ -107,13 +118,13 @@ namespace MusicStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(album).State = EntityState.Modified;
-                db.SaveChanges();
+                //db.Entry(album).State = EntityState.Modified;
+                db.Save(album); // Changes();
                 return RedirectToAction("Index");
             }
             ViewBag.ArtistId = new SelectList(db.Artists, "ArtistId", "Name", album.ArtistId);
             ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", album.GenreId);
-            return View(album);
+            return View("Edit", album);
         }
 
         // GET: Albums/Delete/5
@@ -121,34 +132,49 @@ namespace MusicStore.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("Error"); // new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Album album = db.Albums.Find(id);
+            //Album album = db.Albums.Find(id);
+            Album album = db.Albums.SingleOrDefault(a => a.AlbumId == id);
             if (album == null)
             {
-                return HttpNotFound();
+                return View("Error"); // HttpNotFound();
             }
-            return View(album);
+            return View("Delete", album);
         }
 
         // POST: Albums/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int? id)
         {
-            Album album = db.Albums.Find(id);
-            db.Albums.Remove(album);
-            db.SaveChanges();
+            //Album album = db.Albums.Find(id);
+            //db.Albums.Remove(album);
+            //db.SaveChanges();
+            if (id == null)
+            {
+                return View("Error");
+            }
+
+            Album album = db.Albums.SingleOrDefault(a => a.AlbumId == id);
+
+            if (album == null)
+            {
+                return View("Error");
+            }
+
+            db.Delete(album);
+
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace MusicStore.Models
     {
         IQueryable<Album> Albums { get; }
         IQueryable<Artist> Artists { get; }
+        IQueryable<Genre> Genres { get; }
         Album Save(Album album);
         void Delete(Album album);
     }
